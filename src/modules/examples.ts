@@ -140,47 +140,65 @@ export class UIExampleFactory {
   static registerRightClickMenuItem() {
     const menuIcon = `chrome://${addon.data.config.addonRef}/content/icons/favicon@0.5x.png`;
     // item menuitem with icon
-    ztoolkit.Menu.register("item", {
-      tag: "menuitem",
-      id: "zotero-itemmenu-addontemplate-test",
-      label: getString("menuitem-label"),
-      commandListener: (ev) => addon.hooks.onDialogEvents("dialogExample"),
-      icon: menuIcon,
+    Zotero.MenuManager.registerMenu({
+      pluginID: addon.data.config.addonID,
+      menuID: "item-menu",
+      target: "main/library/item",
+      menus: [
+        {
+          menuType: "menuitem",
+          l10nID: getLocaleID("menuitem-label"),
+          icon: menuIcon,
+          onCommand: () => {
+            addon.hooks.onDialogEvents("dialogExample");
+          },
+        },
+      ],
     });
   }
 
   @example
-  static registerRightClickMenuPopup(win: Window) {
-    ztoolkit.Menu.register(
-      "item",
-      {
-        tag: "menu",
-        label: getString("menupopup-label"),
-        children: [
-          {
-            tag: "menuitem",
-            label: getString("menuitem-submenulabel"),
-            oncommand: "alert('Hello World! Sub Menuitem.')",
-          },
-        ],
-      },
-      "before",
-      win.document?.querySelector(
-        "#zotero-itemmenu-addontemplate-test",
-      ) as XUL.MenuItem,
-    );
+  static registerRightClickMenuPopup() {
+    Zotero.MenuManager.registerMenu({
+      pluginID: addon.data.config.addonID,
+      menuID: "item-submenu",
+      target: "main/library/item",
+      menus: [
+        {
+          menuType: "submenu",
+          l10nID: getLocaleID("menupopup-label"),
+          menus: [
+            {
+              menuType: "menuitem",
+              l10nID: getLocaleID("menuitem-submenulabel"),
+              onCommand: () => {
+                ztoolkit.getGlobal("alert")("Hello World! Sub Menuitem.");
+              },
+            },
+          ],
+        },
+      ],
+    });
   }
 
   @example
   static registerWindowMenuWithSeparator() {
-    ztoolkit.Menu.register("menuFile", {
-      tag: "menuseparator",
-    });
-    // menu->File menuitem
-    ztoolkit.Menu.register("menuFile", {
-      tag: "menuitem",
-      label: getString("menuitem-filemenulabel"),
-      oncommand: "alert('Hello World! File Menuitem.')",
+    Zotero.MenuManager.registerMenu({
+      pluginID: addon.data.config.addonID,
+      menuID: "file-menu",
+      target: "main/menubar/file",
+      menus: [
+        {
+          menuType: "separator",
+        },
+        {
+          menuType: "menuitem",
+          l10nID: getLocaleID("menuitem-filemenulabel"),
+          onCommand: () => {
+            ztoolkit.getGlobal("alert")("Hello World! File Menuitem.");
+          },
+        },
+      ],
     });
   }
 

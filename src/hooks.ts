@@ -24,6 +24,12 @@ async function onStartup() {
 
   KeyExampleFactory.registerShortcuts();
 
+  UIExampleFactory.registerRightClickMenuItem();
+
+  UIExampleFactory.registerRightClickMenuPopup();
+
+  UIExampleFactory.registerWindowMenuWithSeparator();
+
   await UIExampleFactory.registerExtraColumn();
 
   await UIExampleFactory.registerExtraColumnWithCustomCell();
@@ -48,6 +54,9 @@ async function onMainWindowLoad(win: _ZoteroTypes.MainWindow): Promise<void> {
   addon.data.ztoolkit = createZToolkit();
 
   win.MozXULElement.insertFTLIfNeeded(
+    `${addon.data.config.addonRef}-addon.ftl`,
+  );
+  win.MozXULElement.insertFTLIfNeeded(
     `${addon.data.config.addonRef}-mainWindow.ftl`,
   );
 
@@ -69,12 +78,6 @@ async function onMainWindowLoad(win: _ZoteroTypes.MainWindow): Promise<void> {
   });
 
   UIExampleFactory.registerStyleSheet(win);
-
-  UIExampleFactory.registerRightClickMenuItem();
-
-  UIExampleFactory.registerRightClickMenuPopup(win);
-
-  UIExampleFactory.registerWindowMenuWithSeparator();
 
   PromptExampleFactory.registerNormalCommandExample();
 
