@@ -33,6 +33,8 @@ async function onStartup() {
 
   UIExampleFactory.registerWindowMenuWithSeparator();
 
+  await VenueAliasFactory.registerColumn();
+
   await UIExampleFactory.registerExtraColumn();
 
   await UIExampleFactory.registerExtraColumnWithCustomCell();
@@ -105,6 +107,7 @@ async function onMainWindowUnload(win: Window): Promise<void> {
 }
 
 function onShutdown(): void {
+  VenueAliasFactory.unregisterColumn();
   ztoolkit.unregisterAll();
   addon.data.dialog?.window?.close();
   // Remove addon object

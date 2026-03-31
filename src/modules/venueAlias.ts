@@ -3,6 +3,7 @@ import { ExtraFieldTool } from "zotero-plugin-toolkit";
 
 const CROSSREF_API_URL = "https://api.crossref.org/works/";
 const VENUE_ALIAS_KEY = "Venue Alias";
+const VENUE_ALIAS_COLUMN_KEY = "venueAlias";
 const extraFieldTool = new ExtraFieldTool();
 
 export enum VenueAliasResult {
@@ -77,6 +78,11 @@ export function normalizeVenueAlias(alias: string): string | undefined {
   return normalizedAlias || undefined;
 }
 
+export function getVenueAlias(item: Zotero.Item): string | undefined {
+  const alias = extraFieldTool.getExtraField(item, VENUE_ALIAS_KEY);
+  return alias ? normalizeVenueAlias(alias) : undefined;
+}
+
 async function updateVenueAliasForItem(
   item: Zotero.Item,
 ): Promise<VenueAliasResult> {
@@ -104,7 +110,7 @@ async function updateVenueAliasForItem(
     return VenueAliasResult.NotFound;
   }
 
-  const currentAlias = extraFieldTool.getExtraField(item, VENUE_ALIAS_KEY);
+  const currentAlias = getVenueAlias(item);
   if (currentAlias === normalizedAlias) {
     return VenueAliasResult.AlreadyUpToDate;
   }
@@ -224,6 +230,19 @@ export function buildSummaryString(
 }
 
 export class VenueAliasFactory {
+  static async registerColumn() {
+    await Zotero.ItemTreeManager.registerColumns({
+      pluginID: addon.data.config.addonID,
+      dataKey: VENUE_ALIAS_COLUMN_KEY,
+      label: getString("venue-alias-column-label"),
+      dataProvider: (item: Zotero.Item) => getVenueAlias(item) ?? "",
+    });
+  }
+
+  static unregisterColumn() {
+    Zotero.ItemTreeManager.unregisterColumns(addon.data.config.addonID);
+  }
+
   static registerItemMenu() {
     Zotero.MenuManager.registerMenu({
       pluginID: addon.data.config.addonID,
