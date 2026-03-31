@@ -5,6 +5,7 @@ import {
   PromptExampleFactory,
   UIExampleFactory,
 } from "./modules/examples";
+import { VenueAliasFactory } from "./modules/venueAlias";
 import { getString, initLocale } from "./utils/locale";
 import { registerPrefsScripts } from "./modules/preferenceScript";
 import { createZToolkit } from "./utils/ztoolkit";
@@ -27,6 +28,8 @@ async function onStartup() {
   UIExampleFactory.registerRightClickMenuItem();
 
   UIExampleFactory.registerRightClickMenuPopup();
+
+  VenueAliasFactory.registerItemMenu();
 
   UIExampleFactory.registerWindowMenuWithSeparator();
 
@@ -164,6 +167,9 @@ function onShortcuts(type: string) {
 
 function onDialogEvents(type: string) {
   switch (type) {
+    case "fetchVenueAlias":
+      void VenueAliasFactory.fetchSelectedItems();
+      break;
     case "dialogExample":
       HelperExampleFactory.dialogExample();
       break;
