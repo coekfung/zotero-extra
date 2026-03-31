@@ -4,6 +4,7 @@ import { ExtraFieldTool } from "zotero-plugin-toolkit";
 const CROSSREF_API_URL = "https://api.crossref.org/works/";
 const VENUE_ALIAS_KEY = "Venue Alias";
 const VENUE_ALIAS_COLUMN_KEY = "venueAlias";
+const VENUE_ALIAS_MENU_ID = "fetch-venue-alias";
 const extraFieldTool = new ExtraFieldTool();
 
 export enum VenueAliasResult {
@@ -246,7 +247,7 @@ export class VenueAliasFactory {
   static registerItemMenu() {
     Zotero.MenuManager.registerMenu({
       pluginID: addon.data.config.addonID,
-      menuID: "fetch-venue-alias",
+      menuID: VENUE_ALIAS_MENU_ID,
       target: "main/library/item",
       menus: [
         {
@@ -256,6 +257,10 @@ export class VenueAliasFactory {
         },
       ],
     });
+  }
+
+  static unregisterItemMenu() {
+    Zotero.MenuManager.unregisterMenu(VENUE_ALIAS_MENU_ID);
   }
 
   static async fetchSelectedItems() {
