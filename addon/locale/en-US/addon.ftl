@@ -22,3 +22,28 @@ venue-alias-updated =
         [one] Updated { $count } venue alias
        *[other] Updated { $count } venue aliases
     }
+venue-alias-summary-updated =
+    { $count ->
+        [one] { $count } updated
+       *[other] { $count } updated
+    }
+venue-alias-summary-uptodate =
+    { $count ->
+        [one] { $count } already up to date
+       *[other] { $count } already up to date
+    }
+venue-alias-summary-missing-doi =
+    { $count ->
+        [one] { $count } missing DOI
+       *[other] { $count } missing DOI
+    }
+venue-alias-summary-not-found =
+    { $count ->
+        [one] { $count } not found
+       *[other] { $count } not found
+    }
+venue-alias-summary-failed =
+    { $count ->
+        [one] { $count } failed
+       *[other] { $count } failed
+    }

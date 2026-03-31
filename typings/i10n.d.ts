@@ -27,4 +27,9 @@ export type FluentMessageId =
   | 'venue-alias-menuitem'
   | 'venue-alias-no-items'
   | 'venue-alias-no-update'
+  | 'venue-alias-summary-failed'
+  | 'venue-alias-summary-missing-doi'
+  | 'venue-alias-summary-not-found'
+  | 'venue-alias-summary-updated'
+  | 'venue-alias-summary-uptodate'
   | 'venue-alias-updated';

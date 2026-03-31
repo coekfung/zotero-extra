@@ -5,6 +5,37 @@ const CROSSREF_API_URL = "https://api.crossref.org/works/";
 const VENUE_ALIAS_KEY = "Venue Alias";
 const extraFieldTool = new ExtraFieldTool();
 
+export enum VenueAliasResult {
+  MissingDOI = "missingDOI",
+  NotFound = "notFound",
+  AlreadyUpToDate = "alreadyUpToDate",
+  Updated = "updated",
+  RequestFailed = "requestFailed",
+}
+
+function getErrorStatus(error: unknown): number | undefined {
+  if (!error || typeof error !== "object") {
+    return undefined;
+  }
+
+  const status = "status" in error ? error.status : undefined;
+  if (typeof status === "number") {
+    return status;
+  }
+
+  const xmlhttp = "xmlhttp" in error ? error.xmlhttp : undefined;
+  if (
+    xmlhttp &&
+    typeof xmlhttp === "object" &&
+    "status" in xmlhttp &&
+    typeof xmlhttp.status === "number"
+  ) {
+    return xmlhttp.status;
+  }
+
+  return undefined;
+}
+
 interface CrossrefWorkMessage {
   "short-container-title"?: unknown;
 }
@@ -46,31 +77,42 @@ export function normalizeVenueAlias(alias: string): string | undefined {
   return normalizedAlias || undefined;
 }
 
-async function updateVenueAliasForItem(item: Zotero.Item): Promise<boolean> {
+async function updateVenueAliasForItem(
+  item: Zotero.Item,
+): Promise<VenueAliasResult> {
   const doi = item.getField("DOI").trim();
   if (!doi) {
-    return false;
+    return VenueAliasResult.MissingDOI;
   }
 
-  const nextAlias = await fetchCrossrefVenueAlias(doi);
+  let nextAlias: string | undefined;
+  try {
+    nextAlias = await fetchCrossrefVenueAlias(doi);
+  } catch (error) {
+    if (getErrorStatus(error) === 404) {
+      return VenueAliasResult.NotFound;
+    }
+    throw error;
+  }
+
   if (!nextAlias) {
-    return false;
+    return VenueAliasResult.NotFound;
   }
 
   const normalizedAlias = normalizeVenueAlias(nextAlias);
   if (!normalizedAlias) {
-    return false;
+    return VenueAliasResult.NotFound;
   }
 
   const currentAlias = extraFieldTool.getExtraField(item, VENUE_ALIAS_KEY);
   if (currentAlias === normalizedAlias) {
-    return false;
+    return VenueAliasResult.AlreadyUpToDate;
   }
 
   await extraFieldTool.setExtraField(item, VENUE_ALIAS_KEY, normalizedAlias, {
     append: false,
   });
-  return true;
+  return VenueAliasResult.Updated;
 }
 
 function getSelectedRegularItems(): Zotero.Item[] {
@@ -87,6 +129,98 @@ function showResultWindow(text: string, type: "default" | "success" | "fail") {
   })
     .createLine({ text, type })
     .show();
+}
+
+export interface VenueAliasCounts {
+  [VenueAliasResult.MissingDOI]: number;
+  [VenueAliasResult.NotFound]: number;
+  [VenueAliasResult.AlreadyUpToDate]: number;
+  [VenueAliasResult.Updated]: number;
+  [VenueAliasResult.RequestFailed]: number;
+}
+
+export function getSummaryEntries(
+  counts: VenueAliasCounts,
+): Array<[VenueAliasResult, number]> {
+  const entries: Array<[VenueAliasResult, number]> = [];
+
+  if (counts[VenueAliasResult.Updated] > 0) {
+    entries.push([VenueAliasResult.Updated, counts[VenueAliasResult.Updated]]);
+  }
+
+  if (counts[VenueAliasResult.AlreadyUpToDate] > 0) {
+    entries.push([
+      VenueAliasResult.AlreadyUpToDate,
+      counts[VenueAliasResult.AlreadyUpToDate],
+    ]);
+  }
+
+  if (counts[VenueAliasResult.MissingDOI] > 0) {
+    entries.push([
+      VenueAliasResult.MissingDOI,
+      counts[VenueAliasResult.MissingDOI],
+    ]);
+  }
+
+  if (counts[VenueAliasResult.NotFound] > 0) {
+    entries.push([
+      VenueAliasResult.NotFound,
+      counts[VenueAliasResult.NotFound],
+    ]);
+  }
+
+  if (counts[VenueAliasResult.RequestFailed] > 0) {
+    entries.push([
+      VenueAliasResult.RequestFailed,
+      counts[VenueAliasResult.RequestFailed],
+    ]);
+  }
+
+  return entries;
+}
+
+export function createEmptyVenueAliasCounts(): VenueAliasCounts {
+  return {
+    [VenueAliasResult.MissingDOI]: 0,
+    [VenueAliasResult.NotFound]: 0,
+    [VenueAliasResult.AlreadyUpToDate]: 0,
+    [VenueAliasResult.Updated]: 0,
+    [VenueAliasResult.RequestFailed]: 0,
+  };
+}
+
+export function buildSummaryString(
+  counts: VenueAliasCounts,
+  total: number,
+): string {
+  const parts = getSummaryEntries(counts).map(([result, count]) => {
+    switch (result) {
+      case VenueAliasResult.Updated:
+        return getString("venue-alias-summary-updated", { args: { count } });
+      case VenueAliasResult.AlreadyUpToDate:
+        return getString("venue-alias-summary-uptodate", { args: { count } });
+      case VenueAliasResult.MissingDOI:
+        return getString("venue-alias-summary-missing-doi", {
+          args: { count },
+        });
+      case VenueAliasResult.NotFound:
+        return getString("venue-alias-summary-not-found", { args: { count } });
+      case VenueAliasResult.RequestFailed:
+        return getString("venue-alias-summary-failed", { args: { count } });
+    }
+  });
+
+  if (parts.length === 0) {
+    return getString("venue-alias-no-update");
+  }
+
+  // For single item, show concise outcome
+  if (total === 1) {
+    return parts[0]!;
+  }
+
+  // For multiple items, join with comma
+  return parts.join(", ");
 }
 
 export class VenueAliasFactory {
@@ -112,26 +246,25 @@ export class VenueAliasFactory {
       return;
     }
 
-    let updated = 0;
+    const counts = createEmptyVenueAliasCounts();
 
     for (const item of items) {
       try {
-        if (await updateVenueAliasForItem(item)) {
-          updated += 1;
-        }
+        const result = await updateVenueAliasForItem(item);
+        counts[result]++;
       } catch (error) {
+        counts[VenueAliasResult.RequestFailed]++;
         ztoolkit.log("Failed to fetch venue alias", item.id, error);
       }
     }
 
-    if (updated > 0) {
-      showResultWindow(
-        getString("venue-alias-updated", { args: { count: updated } }),
-        "success",
-      );
-      return;
-    }
-
-    showResultWindow(getString("venue-alias-no-update"), "default");
+    const summary = buildSummaryString(counts, items.length);
+    const type =
+      counts[VenueAliasResult.Updated] > 0
+        ? "success"
+        : counts[VenueAliasResult.RequestFailed] > 0
+          ? "fail"
+          : "default";
+    showResultWindow(summary, type);
   }
 }
