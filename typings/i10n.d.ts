@@ -24,6 +24,7 @@ export type FluentMessageId =
   | 'startup-finish'
   | 'tabpanel-lib-tab-label'
   | 'tabpanel-reader-tab-label'
+  | 'venue-alias-column-label'
   | 'venue-alias-menuitem'
   | 'venue-alias-no-items'
   | 'venue-alias-no-update'
