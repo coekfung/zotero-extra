@@ -1,5 +1,10 @@
 import { getString, getLocaleID } from "../utils/locale";
 import { ExtraFieldTool } from "zotero-plugin-toolkit";
+import {
+  type AliasSource,
+  type AliasSourceInput,
+  resolveAliasFromSources,
+} from "./aliasChain";
 
 const CROSSREF_API_URL = "https://api.crossref.org/works/";
 const VENUE_ALIAS_KEY = "Venue Alias";
@@ -59,6 +64,61 @@ async function fetchCrossrefVenueAlias(
   return extractVenueAliasFromCrossref(payload);
 }
 
+const crossrefVenueAliasSource: AliasSource = {
+  name: "crossref",
+  async resolve(input: AliasSourceInput) {
+    try {
+      const alias = await fetchCrossrefVenueAlias(input.doi);
+      if (!alias) {
+        return {
+          sourceName: this.name,
+          status: "no_result",
+        };
+      }
+
+      return {
+        sourceName: this.name,
+        status: "success",
+        alias,
+      };
+    } catch (error) {
+      if (getErrorStatus(error) === 404) {
+        return {
+          sourceName: this.name,
+          status: "no_result",
+        };
+      }
+
+      return {
+        sourceName: this.name,
+        status: "error",
+        error,
+      };
+    }
+  },
+};
+
+const DEFAULT_ALIAS_SOURCES: readonly AliasSource[] = [
+  crossrefVenueAliasSource,
+];
+
+export async function resolveVenueAlias(
+  item: Zotero.Item,
+  sources: readonly AliasSource[] = DEFAULT_ALIAS_SOURCES,
+): Promise<string | undefined> {
+  const doi = item.getField("DOI").trim();
+  if (!doi) {
+    return undefined;
+  }
+
+  const { result } = await resolveAliasFromSources(sources, { item, doi });
+  if (result.status === "error") {
+    throw result.error;
+  }
+
+  return result.alias;
+}
+
 export function extractVenueAliasFromCrossref(
   payload: CrossrefWorkResponse,
 ): string | undefined {
@@ -92,15 +152,7 @@ async function updateVenueAliasForItem(
     return VenueAliasResult.MissingDOI;
   }
 
-  let nextAlias: string | undefined;
-  try {
-    nextAlias = await fetchCrossrefVenueAlias(doi);
-  } catch (error) {
-    if (getErrorStatus(error) === 404) {
-      return VenueAliasResult.NotFound;
-    }
-    throw error;
-  }
+  const nextAlias = await resolveVenueAlias(item);
 
   if (!nextAlias) {
     return VenueAliasResult.NotFound;
@@ -232,7 +284,7 @@ export function buildSummaryString(
 
 export class VenueAliasFactory {
   static async registerColumn() {
-    await Zotero.ItemTreeManager.registerColumns({
+    Zotero.ItemTreeManager.registerColumn({
       pluginID: addon.data.config.addonID,
       dataKey: VENUE_ALIAS_COLUMN_KEY,
       label: getString("venue-alias-column-label"),
@@ -241,7 +293,7 @@ export class VenueAliasFactory {
   }
 
   static unregisterColumn() {
-    Zotero.ItemTreeManager.unregisterColumns(addon.data.config.addonID);
+    Zotero.ItemTreeManager.unregisterColumn(addon.data.config.addonID);
   }
 
   static registerItemMenu() {

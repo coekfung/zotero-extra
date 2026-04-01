@@ -38,10 +38,10 @@
 
 ### Single-test and targeted test guidance
 
-- Preferred full test run: `npm run test -- --exit-on-finish`
+- Preferred full test run: `npm run test`
 - For a single file or filtered test, try Mocha-style passthrough first:
-  - `npm run test -- test/venueAlias.test.ts --exit-on-finish`
-  - `npm run test -- --grep "venue alias" --exit-on-finish`
+  - `npm run test -- test/venueAlias.test.ts`
+  - `npm run test -- --grep "venue alias"`
 - There is no dedicated npm script for single-test execution in this repo.
 - If passthrough flags do not behave as expected under `zotero-plugin test`, fall back to the full suite.
 
@@ -167,6 +167,6 @@
 
 - Run `npm run lint:check` if code style may have changed.
 - Run `npm run build` for code changes.
-- Run `npm run test -- --exit-on-finish` when logic or tests changed.
+- Run `npm run test` when logic or tests changed.
 - Confirm lifecycle cleanup exists for anything registered during startup or window load.
 - Keep hooks thin and keep business logic in modules.

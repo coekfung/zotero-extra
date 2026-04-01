@@ -16,7 +16,7 @@ async function onStartup() {
 
   VenueAliasFactory.registerItemMenu();
 
-  await VenueAliasFactory.registerColumn();
+  VenueAliasFactory.registerColumn();
 
   // Mark initialized as true to confirm plugin loading status
   // outside of the plugin (e.g. scaffold testing process)
