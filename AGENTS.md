@@ -50,7 +50,6 @@ When closing issues via commit:
 ## Tools
 
 - GitHub CLI for issues/PRs
-- Add package labels to issues/PRs: pkg:agent, pkg:ai, pkg:coding-agent, pkg:mom, pkg:pods, pkg:tui, pkg:web-ui
 
 ## Style
 
@@ -61,7 +60,7 @@ When closing issues via commit:
 
 ## Changelog
 
-Location: `packages/*/CHANGELOG.md` (each package has its own)
+Location: `CHANGELOG.md`
 
 ### Format
 
@@ -95,7 +94,7 @@ Use these sections under `## [Unreleased]`:
 
 ### Steps
 
-1. **Update CHANGELOGs**: Ensure all changes since last release are documented in the `[Unreleased]` section of each affected package's CHANGELOG.md
+1. **Update CHANGELOGs**: Ensure all changes since last release are documented in the `[Unreleased]` section of CHANGELOG.md
 
 2. **Run release script**:
    ```bash
