@@ -139,48 +139,97 @@ export class UIExampleFactory {
   @example
   static registerRightClickMenuItem() {
     const menuIcon = `chrome://${addon.data.config.addonRef}/content/icons/favicon@0.5x.png`;
-    // item menuitem with icon
-    ztoolkit.Menu.register("item", {
-      tag: "menuitem",
-      id: "zotero-itemmenu-addontemplate-test",
-      label: getString("menuitem-label"),
-      commandListener: (ev) => addon.hooks.onDialogEvents("dialogExample"),
-      icon: menuIcon,
+    const registeredMenuID = Zotero.MenuManager.registerMenu({
+      menuID: `${addon.data.config.addonRef}-item-menuitem`,
+      pluginID: addon.data.config.addonID,
+      target: "main/library/item",
+      menus: [
+        {
+          menuType: "menuitem",
+          l10nID: getLocaleID("menuitem-label"),
+          icon: menuIcon,
+          onCommand: () => addon.hooks.onDialogEvents("dialogExample"),
+        },
+      ],
     });
+
+    if (registeredMenuID) {
+      Zotero.Plugins.addObserver({
+        shutdown: ({ id }) => {
+          if (id === addon.data.config.addonID) {
+            Zotero.MenuManager.unregisterMenu(registeredMenuID);
+          }
+        },
+      });
+    }
   }
 
   @example
-  static registerRightClickMenuPopup(win: Window) {
-    ztoolkit.Menu.register(
-      "item",
-      {
-        tag: "menu",
-        label: getString("menupopup-label"),
-        children: [
-          {
-            tag: "menuitem",
-            label: getString("menuitem-submenulabel"),
-            oncommand: "alert('Hello World! Sub Menuitem.')",
-          },
-        ],
-      },
-      "before",
-      win.document?.querySelector(
-        "#zotero-itemmenu-addontemplate-test",
-      ) as XUL.MenuItem,
-    );
+  static registerRightClickMenuPopup() {
+    const registeredMenuID = Zotero.MenuManager.registerMenu({
+      menuID: `${addon.data.config.addonRef}-item-submenu`,
+      pluginID: addon.data.config.addonID,
+      target: "main/library/item",
+      menus: [
+        {
+          menuType: "submenu",
+          l10nID: getLocaleID("menupopup-label"),
+          menus: [
+            {
+              menuType: "menuitem",
+              l10nID: getLocaleID("menuitem-submenulabel"),
+              onCommand: () =>
+                ztoolkit.getGlobal("alert")("Hello World! Sub Menuitem."),
+            },
+          ],
+        },
+      ],
+    });
+
+    if (registeredMenuID) {
+      Zotero.Plugins.addObserver({
+        shutdown: ({ id }) => {
+          if (id === addon.data.config.addonID) {
+            Zotero.MenuManager.unregisterMenu(registeredMenuID);
+          }
+        },
+      });
+    }
   }
 
   @example
   static registerWindowMenuWithSeparator() {
-    ztoolkit.Menu.register("menuFile", {
-      tag: "menuseparator",
+    const registeredSeparatorID = Zotero.MenuManager.registerMenu({
+      menuID: `${addon.data.config.addonRef}-file-separator`,
+      pluginID: addon.data.config.addonID,
+      target: "main/menubar/file",
+      menus: [{ menuType: "separator" }],
     });
-    // menu->File menuitem
-    ztoolkit.Menu.register("menuFile", {
-      tag: "menuitem",
-      label: getString("menuitem-filemenulabel"),
-      oncommand: "alert('Hello World! File Menuitem.')",
+    const registeredMenuItemID = Zotero.MenuManager.registerMenu({
+      menuID: `${addon.data.config.addonRef}-file-menuitem`,
+      pluginID: addon.data.config.addonID,
+      target: "main/menubar/file",
+      menus: [
+        {
+          menuType: "menuitem",
+          l10nID: getLocaleID("menuitem-filemenulabel"),
+          onCommand: () =>
+            ztoolkit.getGlobal("alert")("Hello World! File Menuitem."),
+        },
+      ],
+    });
+
+    Zotero.Plugins.addObserver({
+      shutdown: ({ id }) => {
+        if (id === addon.data.config.addonID) {
+          if (registeredSeparatorID) {
+            Zotero.MenuManager.unregisterMenu(registeredSeparatorID);
+          }
+          if (registeredMenuItemID) {
+            Zotero.MenuManager.unregisterMenu(registeredMenuItemID);
+          }
+        }
+      },
     });
   }
 
