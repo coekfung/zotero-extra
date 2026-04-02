@@ -100,6 +100,10 @@ We defines prerelease as the beta version of the plugin, when you select a prere
 
 Multiple agents may work on different files in the same worktree simultaneously. You MUST follow these rules:
 
+## **CRITICAL** Temporary Files/Directories Rules **CRITICAL**
+- You MUST clone git repositories into .pi/git/<repo-name> for further analysis.
+- For other temporary files, you can create them in /tmp. You MUST ask the user for confirmation before cleaning up any temporary files, and you MUST only delete files that you created.
+
 ### Committing
 - **ONLY commit files YOU changed in THIS session**
 - ALWAYS include `fixes #<number>` or `closes #<number>` in the commit message when there is a related issue or PR
@@ -123,11 +127,11 @@ These commands can destroy other agents' work:
 git status
 
 # 2. Add ONLY your specific files
-git add packages/ai/src/providers/transform-messages.ts
-git add packages/ai/CHANGELOG.md
+git add src/index.ts
+git add CHANGELOG.md
 
 # 3. Commit
-git commit -m "fix(ai): description"
+git commit -m "fix: description"
 
 # 4. Push (pull --rebase if needed, but NEVER reset/checkout)
 git pull --rebase && git push
