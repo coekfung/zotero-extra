@@ -1,6 +1,7 @@
 ---
 description: Finish the current task end-to-end with changelog, commit, and push
 ---
+
 Wrap it.
 
 Additional instructions: $ARGUMENTS
@@ -8,6 +9,7 @@ Additional instructions: $ARGUMENTS
 Determine context from the conversation history first.
 
 Rules for context detection:
+
 - If the conversation already mentions a GitHub issue or PR, use that existing context.
 - If the work came from `/is` or `/pr`, assume the issue or PR context is already known from the conversation and from the analysis work already done.
 - If there is no GitHub issue or PR in the conversation history, treat this as non-GitHub work.
@@ -22,6 +24,7 @@ Unless I explicitly override something in this request, do the following in orde
 6. Push the current branch.
 
 Constraints:
+
 - Never stage unrelated files.
 - Never use `git add .` or `git add -A`.
 - Run required checks before committing if code changed.
