@@ -1,3 +1,8 @@
 {
-  "extends": "../tsconfig.json"
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["zotero-types/entries/sandbox", "mocha", "node"],
+    "noEmit": true
+  },
+  "include": ["./**/*.ts", "../src", "../typings"]
 }
