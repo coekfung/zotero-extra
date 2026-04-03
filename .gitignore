@@ -1,6 +1,9 @@
 # dot files
 .DS_Store
 
+# Plans
+plan.md
+
 # Node.js
 node_modules
 pnpm-lock.yaml

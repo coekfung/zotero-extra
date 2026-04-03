@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added `plan.md` to `.gitignore` to exclude development planning documents from version control.
+
 ### Changed
 
 - Cleaned up template code: removed example factories, simplified localization, minimized preferences UI, and streamlined the addon lifecycle hooks.
