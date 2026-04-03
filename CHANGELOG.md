@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Cleaned up template code: removed example factories, simplified localization, minimized preferences UI, and streamlined the addon lifecycle hooks.
+
 ### Added
 
 - Initial Zotero plugin scaffold with addon bootstrap, preferences, localization, example modules, tests, and CI/release configuration.

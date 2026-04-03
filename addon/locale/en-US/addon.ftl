@@ -1,15 +1,2 @@
-startup-begin = Addon is loading
-startup-finish = Addon is ready
-menuitem-label =
-    .label = Addon Template: Helper Examples
-menupopup-label =
-    .label = Addon Template: Menupopup
-menuitem-submenulabel =
-    .label = Addon Template
-menuitem-filemenulabel =
-    .label = Addon Template: File Menuitem
-prefs-title = Template
-prefs-table-title = Title
-prefs-table-detail = Detail
-tabpanel-lib-tab-label = Lib Tab
-tabpanel-reader-tab-label = Reader Tab
+startup-finish = Zotero Extra is ready
+prefs-title = Zotero Extra
