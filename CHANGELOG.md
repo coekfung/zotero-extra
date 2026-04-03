@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added Semantic Scholar integration to fetch and store short conference names in the Extra field.
 - Added preference settings for Semantic Scholar API key with masked password input and localization support (en-US, zh-CN).
 - Added `plan.md` to `.gitignore` to exclude development planning documents from version control.
 

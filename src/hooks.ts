@@ -3,6 +3,7 @@ import {
   registerPrefs,
   registerPrefsScripts,
 } from "./modules/preferenceWindow";
+import { registerMenu, unregisterMenu } from "./modules/menu";
 import { createZToolkit } from "./utils/ztoolkit";
 
 async function onStartup() {
@@ -16,6 +17,8 @@ async function onStartup() {
 
   registerPrefs();
 
+  registerMenu();
+
   await Promise.all(
     Zotero.getMainWindows().map((win) => onMainWindowLoad(win)),
   );
@@ -25,11 +28,16 @@ async function onStartup() {
 }
 
 async function onMainWindowLoad(win: _ZoteroTypes.MainWindow): Promise<void> {
-  // Create ztoolkit for every window
-  addon.data.ztoolkit = createZToolkit();
+  // Create ztoolkit only if not already initialized
+  if (!addon.data.ztoolkit) {
+    addon.data.ztoolkit = createZToolkit();
+  }
 
   win.MozXULElement.insertFTLIfNeeded(
     `${addon.data.config.addonRef}-addon.ftl`,
+  );
+  win.MozXULElement.insertFTLIfNeeded(
+    `${addon.data.config.addonRef}-mainWindow.ftl`,
   );
 
   // Show startup notification
@@ -46,10 +54,11 @@ async function onMainWindowLoad(win: _ZoteroTypes.MainWindow): Promise<void> {
 }
 
 async function onMainWindowUnload(_win: Window): Promise<void> {
-  ztoolkit.unregisterAll();
+  // Cleanup is handled in onShutdown
 }
 
 function onShutdown(): void {
+  unregisterMenu();
   ztoolkit.unregisterAll();
   // Remove addon object
   addon.data.alive = false;

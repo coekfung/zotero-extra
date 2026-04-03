@@ -3,7 +3,25 @@
 /* eslint-disable */
 // @ts-nocheck
 export type FluentMessageId =
+  | 'menu-fetch-conference-name'
+  | 'menu-zotero-extra'
   | 'pref-semantic-scholar-api-key'
   | 'pref-title'
   | 'prefs-title'
+  | 'semantic-scholar-error-empty-response'
+  | 'semantic-scholar-error-generic'
+  | 'semantic-scholar-error-http'
+  | 'semantic-scholar-error-invalid-json'
+  | 'semantic-scholar-error-network'
+  | 'semantic-scholar-error-no-doi'
+  | 'semantic-scholar-error-no-venue'
+  | 'semantic-scholar-error-not-conference'
+  | 'semantic-scholar-error-not-found'
+  | 'semantic-scholar-error-rate-limited'
+  | 'semantic-scholar-fetching'
+  | 'semantic-scholar-no-conference-papers'
+  | 'semantic-scholar-no-dois'
+  | 'semantic-scholar-no-selection'
+  | 'semantic-scholar-partial'
+  | 'semantic-scholar-success'
   | 'startup-finish';
