@@ -1,4 +1,4 @@
-import { getString, initLocale } from "./utils/locale";
+import { initLocale } from "./utils/locale";
 import {
   registerPrefs,
   registerPrefsScripts,
@@ -39,18 +39,6 @@ async function onMainWindowLoad(win: _ZoteroTypes.MainWindow): Promise<void> {
   win.MozXULElement.insertFTLIfNeeded(
     `${addon.data.config.addonRef}-mainWindow.ftl`,
   );
-
-  // Show startup notification
-  new ztoolkit.ProgressWindow(addon.data.config.addonName, {
-    closeOnClick: true,
-    closeTime: 3000,
-  })
-    .createLine({
-      text: getString("startup-finish"),
-      type: "success",
-      progress: 100,
-    })
-    .show();
 }
 
 async function onMainWindowUnload(_win: Window): Promise<void> {
