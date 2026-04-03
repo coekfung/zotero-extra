@@ -13,6 +13,38 @@ interface SemanticScholarResponse {
 const API_BASE_URL = "https://api.semanticscholar.org/graph/v1/paper";
 const EXTRA_FIELD_KEY = "shortConferenceName";
 
+// Rate limiting: minimum delay between requests in milliseconds
+// Without API key: 100 requests per 5 minutes (~1 per 3 seconds)
+// With API key: 1 request per second
+const RATE_LIMIT_NO_API_KEY_MS = 3500;
+const RATE_LIMIT_WITH_API_KEY_MS = 1000;
+
+let lastRequestTime = 0;
+
+/**
+ * Get the rate limit interval based on API key availability
+ * @returns The minimum delay in milliseconds
+ */
+function getRateLimitInterval(): number {
+  return getApiKey() ? RATE_LIMIT_WITH_API_KEY_MS : RATE_LIMIT_NO_API_KEY_MS;
+}
+
+/**
+ * Rate limiter: ensures minimum delay between API requests
+ * @returns Promise that resolves when it's safe to make the next request
+ */
+async function rateLimit(): Promise<void> {
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  const waitTime = Math.max(0, getRateLimitInterval() - timeSinceLastRequest);
+
+  if (waitTime > 0) {
+    await new Promise((resolve) => setTimeout(resolve, waitTime));
+  }
+
+  lastRequestTime = Date.now();
+}
+
 /**
  * Get the Semantic Scholar API key from preferences, if configured
  */
@@ -46,6 +78,9 @@ export function getShortestAlias(aliases: string[]): string | null {
 export async function fetchConferenceShortName(
   doi: string,
 ): Promise<string | null> {
+  // Apply rate limiting before making the request
+  await rateLimit();
+
   // Trim and URL-encode the DOI
   const trimmedDoi = doi.trim();
   const encodedDoi = encodeURIComponent(trimmedDoi);
