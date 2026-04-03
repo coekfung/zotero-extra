@@ -27,6 +27,7 @@
 
 ### Fixed
 
+- Improved Semantic Scholar request handling with a serialized queue, in-flight DOI deduplication, response caching, and adaptive retries for transient failures.
 - Corrected `test/tsconfig.json` so LSP diagnostics resolve test files correctly.
 
 ### Removed
