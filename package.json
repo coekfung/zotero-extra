@@ -1,7 +1,7 @@
 {
   "name": "zotero-extra",
   "type": "module",
-  "version": "0.3.0",
+  "version": "0.2.0",
   "description": "A Zotero plugin project for fetching, processing, and saving useful information into item Extra fields.",
   "config": {
     "addonName": "Zotero Extra",
