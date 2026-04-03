@@ -4,7 +4,7 @@
 
 ```typescript
 const items = ZoteroPane.getSelectedItems();
-const regularItems = items.filter(item => item.isRegularItem());
+const regularItems = items.filter((item) => item.isRegularItem());
 ```
 
 ## Item Fields
@@ -104,7 +104,7 @@ const callback = {
         // Process
       }
     }
-  }
+  },
 };
 
 const notifierID = Zotero.Notifier.registerObserver(callback, ["item"]);
@@ -128,7 +128,7 @@ const items = await Zotero.Items.getAsync(ids);
 
 ```typescript
 const response = await Zotero.HTTP.request("GET", "https://api.example.com", {
-  headers: { "Accept": "application/json" },
+  headers: { Accept: "application/json" },
 });
 const data = JSON.parse(response.responseText);
 ```

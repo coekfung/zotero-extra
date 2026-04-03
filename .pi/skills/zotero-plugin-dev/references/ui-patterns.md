@@ -71,15 +71,17 @@ const menuID = Zotero.MenuManager.registerMenu({
   menuID: `${addon.data.config.addonRef}-menu`,
   pluginID: addon.data.config.addonID,
   target: "main/library/item",
-  menus: [{
-    menuType: "menuitem",
-    l10nID: getLocaleID("menu-label"),
-    icon: `chrome://${addon.data.config.addonRef}/content/icons/icon.png`,
-    onCommand: () => {
-      const items = ZoteroPane.getSelectedItems();
-      // Process
+  menus: [
+    {
+      menuType: "menuitem",
+      l10nID: getLocaleID("menu-label"),
+      icon: `chrome://${addon.data.config.addonRef}/content/icons/icon.png`,
+      onCommand: () => {
+        const items = ZoteroPane.getSelectedItems();
+        // Process
+      },
     },
-  }],
+  ],
 });
 ```
 
@@ -93,7 +95,11 @@ const menuID = Zotero.MenuManager.registerMenu({
   target: "main/menubar/file",
   menus: [
     { menuType: "separator" },
-    { menuType: "menuitem", l10nID: getLocaleID("file-menu"), onCommand: () => {} },
+    {
+      menuType: "menuitem",
+      l10nID: getLocaleID("file-menu"),
+      onCommand: () => {},
+    },
   ],
 });
 
@@ -102,7 +108,13 @@ Zotero.MenuManager.registerMenu({
   menuID: `${addon.data.config.addonRef}-tools-menu`,
   pluginID: addon.data.config.addonID,
   target: "main/menubar/tools",
-  menus: [{ menuType: "menuitem", l10nID: getLocaleID("tools-menu"), onCommand: () => {} }],
+  menus: [
+    {
+      menuType: "menuitem",
+      l10nID: getLocaleID("tools-menu"),
+      onCommand: () => {},
+    },
+  ],
 });
 ```
 
@@ -161,8 +173,11 @@ const value = dialogData.inputValue;
 const path = await new ztoolkit.FilePicker(
   "Import File",
   "open",
-  [["PNG", "*.png"], ["All", "*.*"]],
-  "image.png"
+  [
+    ["PNG", "*.png"],
+    ["All", "*.*"],
+  ],
+  "image.png",
 ).open();
 ```
 

@@ -42,7 +42,9 @@ const menuL10nID = getLocaleID("menu-label");
 
 ```typescript
 async function onMainWindowLoad(win: _ZoteroTypes.MainWindow) {
-  win.MozXULElement.insertFTLIfNeeded(`${addon.data.config.addonRef}-addon.ftl`);
+  win.MozXULElement.insertFTLIfNeeded(
+    `${addon.data.config.addonRef}-addon.ftl`,
+  );
 }
 ```
 

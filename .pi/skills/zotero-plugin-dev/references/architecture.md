@@ -51,7 +51,9 @@ async function onStartup() {
 
 async function onMainWindowLoad(win: _ZoteroTypes.MainWindow) {
   addon.data.ztoolkit = createZToolkit();
-  win.MozXULElement.insertFTLIfNeeded(`${addon.data.config.addonRef}-addon.ftl`);
+  win.MozXULElement.insertFTLIfNeeded(
+    `${addon.data.config.addonRef}-addon.ftl`,
+  );
 }
 
 async function onMainWindowUnload(win: Window) {
@@ -97,9 +99,11 @@ export function createZToolkit() {
 import { config } from "../../package.json";
 
 export function initLocale() {
-  const l10n = new (typeof Localization === "undefined"
-    ? ztoolkit.getGlobal("Localization")
-    : Localization)([`${config.addonRef}-addon.ftl`], true);
+  const l10n = new (
+    typeof Localization === "undefined"
+      ? ztoolkit.getGlobal("Localization")
+      : Localization
+  )([`${config.addonRef}-addon.ftl`], true);
   addon.data.locale = { current: l10n };
 }
 
@@ -126,10 +130,7 @@ export function getPref(key: string) {
   return Zotero.Prefs.get(`${prefsPrefix}.${key}`, true);
 }
 
-export function setPref(
-  key: string,
-  value: string | number | boolean,
-) {
+export function setPref(key: string, value: string | number | boolean) {
   Zotero.Prefs.set(`${prefsPrefix}.${key}`, value, true);
 }
 ```

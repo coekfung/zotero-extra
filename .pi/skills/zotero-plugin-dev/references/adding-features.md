@@ -37,7 +37,7 @@ class MyFeature {
         if (type === "item" && event === "add") {
           await this.handleNewItems(ids);
         }
-      }
+      },
     };
     this.notifierID = Zotero.Notifier.registerObserver(callback, ["item"]);
   }
@@ -47,11 +47,13 @@ class MyFeature {
       menuID: `${addon.data.config.addonRef}-menu`,
       pluginID: addon.data.config.addonID,
       target: "main/library/item",
-      menus: [{
-        menuType: "menuitem",
-        l10nID: getLocaleID("menu-label"),
-        onCommand: () => this.handleMenuClick(),
-      }],
+      menus: [
+        {
+          menuType: "menuitem",
+          l10nID: getLocaleID("menu-label"),
+          onCommand: () => this.handleMenuClick(),
+        },
+      ],
     });
   }
 
@@ -89,7 +91,9 @@ async function onStartup() {
 
 async function onMainWindowLoad(win: _ZoteroTypes.MainWindow) {
   addon.data.ztoolkit = createZToolkit();
-  win.MozXULElement.insertFTLIfNeeded(`${addon.data.config.addonRef}-addon.ftl`);
+  win.MozXULElement.insertFTLIfNeeded(
+    `${addon.data.config.addonRef}-addon.ftl`,
+  );
   await myFeature.initWindow(win);
 }
 
@@ -100,6 +104,7 @@ function onShutdown() {
 ```
 
 Notes:
+
 - `MenuManager`, `ItemPaneManager`, and `PreferencePanes` support `pluginID`-based cleanup. Still clean up module-owned resources such as notifiers, plugin observers, timers, and window listeners.
 - Prefer storing unregister callbacks or returned IDs in the feature module rather than scattering cleanup across hooks.
 - Treat scaffold example code as a starting point. Prefer current non-deprecated APIs and remove demo-only behavior early.
@@ -124,7 +129,7 @@ class MyFeature {
   }
 
   cleanup() {
-    this.resources.forEach(fn => fn());
+    this.resources.forEach((fn) => fn());
     this.resources = [];
   }
 }

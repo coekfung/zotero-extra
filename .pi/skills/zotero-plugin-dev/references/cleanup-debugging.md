@@ -37,6 +37,7 @@ function onShutdown() {
 ## What Must Be Cleaned Up Explicitly
 
 Clean up resources your module owns, especially:
+
 - `Zotero.Notifier` observers
 - `Zotero.Plugins.addObserver` handlers
 - timers and deferred work
@@ -65,12 +66,12 @@ If the project has its own workflow constraints, follow those instead of scaffol
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Plugin not loading | Check `addon.data.initialized = true` is set |
-| UI not appearing | Verify `pluginID` matches config |
+| Issue               | Solution                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------------------ |
+| Plugin not loading  | Check `addon.data.initialized = true` is set                                                           |
+| UI not appearing    | Verify `pluginID` matches config                                                                       |
 | Cleanup not working | Verify which APIs auto-clean via `pluginID` and explicitly unregister observers, listeners, and timers |
-| Type errors | Run `npm run build` to regenerate types |
+| Type errors         | Run `npm run build` to regenerate types                                                                |
 
 ## Debug Checklist
 
