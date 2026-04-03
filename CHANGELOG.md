@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Refactored Semantic Scholar API implementation: replaced queue with mutex-based serialization, simplified retry logic, removed caching and fluent error strings, skip existing fields.
+
 ## [0.2.0] - 2025-04-03
 
 ### Added

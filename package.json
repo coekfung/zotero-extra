@@ -30,6 +30,7 @@
     "update-deps": "npm update --save"
   },
   "dependencies": {
+    "async-mutex": "^0.5.0",
     "zotero-plugin-toolkit": "^5.1.2"
   },
   "devDependencies": {
