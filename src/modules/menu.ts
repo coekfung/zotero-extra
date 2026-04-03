@@ -1,5 +1,8 @@
 import { getString, getLocaleID } from "../utils/locale";
-import { updateItemConferenceName } from "../utils/semanticScholar";
+import {
+  updateItemConferenceName,
+  type UpdateResult,
+} from "../utils/semanticScholar";
 import { isConferencePaper } from "../utils/common";
 
 /**
@@ -65,20 +68,25 @@ export async function handleFetchConferenceName(
     .show();
 
   let successCount = 0;
+  let skipCount = 0;
   let failCount = 0;
+  const errorCounts = new Map<string, number>();
 
   for (let i = 0; i < papersWithDoi.length; i++) {
     const item = papersWithDoi[i];
     const percent = Math.round(((i + 1) / papersWithDoi.length) * 100);
 
     try {
-      await updateItemConferenceName(item);
-      successCount++;
+      const result: UpdateResult = await updateItemConferenceName(item);
+      if (result === "updated") {
+        successCount++;
+      } else {
+        skipCount++;
+      }
     } catch (error) {
       failCount++;
-      ztoolkit.log(
-        `Failed to fetch conference name for item ${item.id}: ${error}`,
-      );
+      const errorText = error instanceof Error ? error.message : String(error);
+      errorCounts.set(errorText, (errorCounts.get(errorText) || 0) + 1);
     }
 
     progress.changeLine({
@@ -91,19 +99,47 @@ export async function handleFetchConferenceName(
 
   progress.startCloseTimer(3000);
 
-  if (failCount === 0) {
+  if (failCount === 0 && skipCount === 0) {
     showProgress(
       getString("semantic-scholar-success", {
         args: { count: successCount },
       }),
       "success",
     );
-  } else {
+  } else if (failCount === 0) {
     showProgress(
-      getString("semantic-scholar-partial", {
+      getString("semantic-scholar-success-skip", {
+        args: {
+          count: successCount,
+          skip: skipCount,
+        },
+      }),
+      "success",
+    );
+  } else if (successCount === 0 && skipCount === 0) {
+    const errorSummary = Array.from(errorCounts.entries())
+      .map(([msg, count]) => `${msg} (${count})`)
+      .join(", ");
+    showProgress(
+      getString("semantic-scholar-error-message", {
+        args: {
+          count: failCount,
+          message: errorSummary,
+        },
+      }),
+      "error",
+    );
+  } else {
+    const errorSummary = Array.from(errorCounts.entries())
+      .map(([msg, count]) => `${msg} (${count})`)
+      .join(", ");
+    showProgress(
+      getString("semantic-scholar-partial-message", {
         args: {
           success: successCount,
           fail: failCount,
+          skip: skipCount,
+          message: errorSummary,
         },
       }),
       "default",

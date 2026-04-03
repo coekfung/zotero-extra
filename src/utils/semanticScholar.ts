@@ -152,20 +152,23 @@ export async function fetchConferenceShortName(
   return requestPromise;
 }
 
+export type UpdateResult = "updated" | "skipped";
+
 /**
  * Update a single item with its short conference name from Semantic Scholar.
  * Skips if the field already exists.
+ * @returns "updated" if the field was set, "skipped" if it already existed
  */
 export async function updateItemConferenceName(
   item: Zotero.Item,
-): Promise<void> {
+): Promise<UpdateResult> {
   if (!isConferencePaper(item)) {
     throw new Error("Not a conference paper");
   }
 
   const existing = ztoolkit.ExtraField.getExtraField(item, EXTRA_FIELD_KEY);
   if (existing) {
-    return;
+    return "skipped";
   }
 
   const doi = item.getField("DOI");
@@ -179,4 +182,5 @@ export async function updateItemConferenceName(
   }
 
   await ztoolkit.ExtraField.setExtraField(item, EXTRA_FIELD_KEY, shortName);
+  return "updated";
 }

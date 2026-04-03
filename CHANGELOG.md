@@ -5,6 +5,7 @@
 ### Changed
 
 - Refactored Semantic Scholar API implementation: replaced queue with mutex-based serialization, simplified retry logic, removed caching and fluent error strings, skip existing fields.
+- Improved Semantic Scholar error reporting: now displays specific error messages and skip counts in the UI notification instead of logging to debug console.
 
 ## [0.2.0] - 2025-04-03
 
