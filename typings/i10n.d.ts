@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 export type FluentMessageId =
-  | 'pref-enable'
+  | 'pref-semantic-scholar-api-key'
   | 'pref-title'
   | 'prefs-title'
   | 'startup-finish';

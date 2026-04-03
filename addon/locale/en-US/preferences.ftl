@@ -1,3 +1,2 @@
-pref-title = Zotero Extra Settings
-pref-enable =
-    .label = Enable
+pref-title = General
+pref-semantic-scholar-api-key = Semantic Scholar API Key (optional, for higher rate limits):

@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added preference settings for Semantic Scholar API key with masked password input and localization support (en-US, zh-CN).
 - Added `plan.md` to `.gitignore` to exclude development planning documents from version control.
 
 ### Changed
